@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: adaptive-inventory-smoke
+  namespace: resilient-microservices-adaptive-recovery
+  labels:
+    app.kubernetes.io/part-of: resilient-microservices-adaptive-recovery
+    app.kubernetes.io/component: phase4-smoke
+spec:
+  action: pod-kill
+  mode: one
+  duration: 20s
+  selector:
+    namespaces:
+      - resilient-microservices-adaptive-recovery
+    labelSelectors:
+      app.kubernetes.io/name: adaptive-inventory-service

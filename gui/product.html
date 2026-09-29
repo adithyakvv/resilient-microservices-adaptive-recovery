@@ -1,0 +1,6 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Product Service — Adaptive Recovery Demo</title><link rel="stylesheet" href="/service-page.css"></head>
+<body><header><div class="topline"><h1 id="service-title">Product Service</h1><a id="back-dashboard" href="/">← Demo dashboard</a></div></header>
+<main data-service="product"><section class="card"><div class="heading"><h2>Service health</h2><span id="service-health" class="badge unhealthy">Checking…</span></div><p id="service-status" class="status" role="status">Loading Product records…</p><button id="refresh-records" type="button">Refresh</button></section>
+<section class="card"><h2>Products</h2><div class="table-wrap"><table><thead><tr><th>ID</th><th>SKU</th><th>Name</th><th>Price</th><th>Active</th><th>Actions</th></tr></thead><tbody id="service-records"><tr><td colspan="6" class="empty">Loading…</td></tr></tbody></table></div></section>
+<section class="card"><h2>Create product</h2><form id="create-record" class="form-grid"></form></section></main><script src="/service-page.js" defer></script></body></html>

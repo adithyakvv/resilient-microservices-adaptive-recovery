@@ -1,0 +1,64 @@
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  name: adaptive-recovery
+  namespace: resilient-microservices-adaptive-recovery
+  labels:
+    app.kubernetes.io/name: prometheus
+    app.kubernetes.io/instance: adaptive-recovery
+    app.kubernetes.io/part-of: resilient-microservices-adaptive-recovery
+spec:
+  serviceAccountName: adaptive-recovery-prometheus
+  replicas: 1
+  version: v3.13.2-distroless
+  enableAdminAPI: false
+  scrapeInterval: 15s
+  additionalScrapeConfigs:
+    name: adaptive-recovery-engine-scrape
+    key: prometheus-additional.yaml
+  evaluationInterval: 15s
+  retention: 15d
+  retentionSize: 8GB
+  externalLabels:
+    project: resilient-microservices-adaptive-recovery
+    environment: local
+  serviceMonitorNamespaceSelector:
+    matchLabels:
+      kubernetes.io/metadata.name: resilient-microservices-adaptive-recovery
+  serviceMonitorSelector:
+    matchLabels:
+      app.kubernetes.io/part-of: resilient-microservices-adaptive-recovery
+  podMonitorNamespaceSelector:
+    matchLabels:
+      kubernetes.io/metadata.name: resilient-microservices-adaptive-recovery
+  podMonitorSelector:
+    matchLabels:
+      app.kubernetes.io/part-of: resilient-microservices-adaptive-recovery
+  probeNamespaceSelector:
+    matchLabels:
+      kubernetes.io/metadata.name: resilient-microservices-adaptive-recovery
+  probeSelector:
+    matchLabels:
+      app.kubernetes.io/part-of: resilient-microservices-adaptive-recovery
+  ruleNamespaceSelector:
+    matchLabels:
+      kubernetes.io/metadata.name: resilient-microservices-adaptive-recovery
+  ruleSelector:
+    matchLabels:
+      app.kubernetes.io/part-of: resilient-microservices-adaptive-recovery
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi
+  storage:
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 10Gi

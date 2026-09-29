@@ -1,0 +1,81 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: adaptive-postgres
+  labels:
+    app.kubernetes.io/name: adaptive-postgres
+    app.kubernetes.io/part-of: resilient-microservices-adaptive-recovery
+spec:
+  selector:
+    app.kubernetes.io/name: adaptive-postgres
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: postgres
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: adaptive-postgres
+  labels:
+    app.kubernetes.io/name: adaptive-postgres
+    app.kubernetes.io/part-of: resilient-microservices-adaptive-recovery
+spec:
+  serviceName: adaptive-postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: adaptive-postgres
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: adaptive-postgres
+        app.kubernetes.io/part-of: resilient-microservices-adaptive-recovery
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:17-alpine
+          ports:
+            - name: postgres
+              containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: adaptive-postgres-credentials
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: adaptive-postgres-credentials
+                  key: password
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: adaptive-postgres-credentials
+                  key: database
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 6
+          volumeMounts:
+            - name: adaptive-postgres-data
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: adaptive-postgres-data
+        labels:
+          app.kubernetes.io/name: adaptive-postgres
+          app.kubernetes.io/part-of: resilient-microservices-adaptive-recovery
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi

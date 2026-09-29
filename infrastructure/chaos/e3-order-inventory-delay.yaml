@@ -1,0 +1,26 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: adaptive-order-inventory-e3-delay
+  namespace: resilient-microservices-adaptive-recovery
+spec:
+  action: delay
+  mode: one
+  selector:
+    namespaces:
+      - resilient-microservices-adaptive-recovery
+    labelSelectors:
+      app.kubernetes.io/name: adaptive-order-service
+  direction: to
+  target:
+    mode: one
+    selector:
+      namespaces:
+        - resilient-microservices-adaptive-recovery
+      labelSelectors:
+        app.kubernetes.io/name: adaptive-inventory-service
+  delay:
+    latency: 1000ms
+    jitter: 20ms
+    correlation: "0"
+  duration: 30s

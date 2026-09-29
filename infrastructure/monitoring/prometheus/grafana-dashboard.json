@@ -1,0 +1,184 @@
+{
+  "uid": "adaptive-recovery-phase3",
+  "title": "Adaptive Recovery Experiments",
+  "schemaVersion": 39,
+  "refresh": "15s",
+  "time": {
+    "from": "now-30m",
+    "to": "now"
+  },
+  "panels": [
+    {
+      "id": 101,
+      "type": "timeseries",
+      "title": "E1 — Inventory CPU stress",
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 12,
+        "h": 10
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "cores",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 12
+          }
+        }
+      },
+      "targets": [
+        {
+          "expr": "adaptive_recovery_e1_cpu_cores",
+          "legendFormat": "Inventory — E1 container CPU (Metrics API)",
+          "refId": "A"
+        },
+        {
+          "expr": "vector(0.10)",
+          "legendFormat": "E1 threshold 0.10 cores",
+          "refId": "B"
+        }
+      ]
+    },
+    {
+      "id": 102,
+      "type": "timeseries",
+      "title": "E2 — Inventory memory stress",
+      "description": "Inventory container memory from E2 Kubernetes Metrics API samples. Prometheus scrape timestamps provide the plotted history; the saved E2 report is authoritative for action and cleanup. Use the dashboard time picker to view a run.",
+      "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 12,
+        "h": 10
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 12
+          }
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "Inventory memory used" },
+            "properties": [
+              { "id": "color", "value": { "mode": "fixed", "fixedColor": "blue" } }
+            ]
+          }
+        ]
+      },
+      "targets": [
+        {
+          "expr": "adaptive_recovery_e2_memory_bytes",
+          "legendFormat": "Inventory memory used",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 103,
+      "type": "timeseries",
+      "title": "E3 — Network Degradation/Loss",
+      "gridPos": {
+        "x": 0,
+        "y": 10,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {"defaults": {"unit": "ms"}, "overrides": []},
+      "targets": [
+        {"refId": "A", "expr": "adaptive_order_inventory_latency_ms{job=\"adaptive-recovery-engine-e3\"}", "legendFormat": "Order to Inventory successful probe latency"}
+      ],
+      "options": {"legend": {"displayMode": "table", "placement": "bottom"}}
+    },
+    {
+      "id": 104,
+      "type": "timeseries",
+      "title": "E4 — Simulated-delay mitigation (Order→Inventory)",
+      "description": "Blue: actual safe Order-to-Inventory probe latency. Gray dashed line: 500 ms trigger. Orange right axis: this run's verified Engine mitigation (0 before verification, 1 only after execute=true verifies it). A 1 before a new run's baseline scrape belongs to earlier history.",
+      "gridPos": {
+        "x": 12,
+        "y": 10,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {"defaults": {"unit": "ms", "custom": {"axisLabel": "Latency (ms)"}}, "overrides": [{"matcher": {"id": "byName", "options": "Order to Inventory safe-probe latency (ms)"}, "properties": [{"id": "color", "value": {"fixedColor": "blue", "mode": "fixed"}}, {"id": "custom.lineWidth", "value": 2}]}, {"matcher": {"id": "byName", "options": "Engine mitigation verified (0/1)"}, "properties": [{"id": "unit", "value": "none"}, {"id": "color", "value": {"fixedColor": "orange", "mode": "fixed"}}, {"id": "custom.axisPlacement", "value": "right"}, {"id": "custom.axisLabel", "value": "Mitigation verified (0/1)"}, {"id": "min", "value": 0}, {"id": "max", "value": 1}, {"id": "custom.lineInterpolation", "value": "stepAfter"}]}, {"matcher": {"id": "byName", "options": "500 ms trigger threshold"}, "properties": [{"id": "color", "value": {"fixedColor": "dark-gray", "mode": "fixed"}}, {"id": "custom.lineStyle", "value": {"fill": "dash", "dash": [8, 8]}}, {"id": "custom.lineWidth", "value": 1}]}]},
+      "targets": [
+        {"refId": "A", "expr": "adaptive_recovery_e4_order_inventory_latency_ms", "legendFormat": "Order to Inventory safe-probe latency (ms)"},
+        {"refId": "B", "expr": "adaptive_recovery_e4_mitigation_verified", "legendFormat": "Engine mitigation verified (0/1)"},
+        {"refId": "C", "expr": "vector(500)", "legendFormat": "500 ms trigger threshold"}
+      ],
+      "options": {"legend": {"displayMode": "table", "placement": "bottom"}}
+    },
+    {
+      "id": 105,
+      "type": "timeseries",
+      "title": "E5 — HTTP 500 Application Fault",
+      "description": "E5 fallback policy. The Engine restart decision is recorded; no Kubernetes service or Pod was restarted.",
+      "gridPos": {
+        "x": 0,
+        "y": 18,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0
+        },
+        "overrides": [
+          {"matcher": {"id": "byName", "options": "E5 consecutive HTTP 500 samples"}, "properties": [{"id": "color", "value": {"fixedColor": "red", "mode": "fixed"}}]},
+          {"matcher": {"id": "byName", "options": "E5 restart action recorded"}, "properties": [{"id": "color", "value": {"fixedColor": "orange", "mode": "fixed"}}]},
+          {"matcher": {"id": "byName", "options": "E5 action threshold (3 fresh HTTP 500s)"}, "properties": [{"id": "color", "value": {"fixedColor": "yellow", "mode": "fixed"}}]}
+        ]
+      },
+      "targets": [
+        {
+          "expr": "adaptive_recovery_e5_http_500_consecutive",
+          "legendFormat": "E5 consecutive HTTP 500 samples",
+          "refId": "A"
+        },
+        {
+          "expr": "adaptive_recovery_e5_simulated_action",
+          "legendFormat": "E5 restart action recorded",
+          "refId": "B"
+        },
+        {
+          "expr": "vector(3)",
+          "legendFormat": "E5 action threshold (3 fresh HTTP 500s)",
+          "refId": "C"
+        }
+      ]
+    },
+    {
+      "id": 106,
+      "type": "timeseries",
+      "title": "E6 — Product pod replacement and recovery",
+      "gridPos": {
+        "x": 12,
+        "y": 18,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {"defaults": {"unit": "none", "decimals": 0, "min": 0, "max": 1, "custom": {"axisLabel": "State (0 = No, 1 = Yes)", "lineInterpolation": "stepAfter", "lineWidth": 2}}, "overrides": [{"matcher": {"id": "byName", "options": "Product Ready (0/1)"}, "properties": [{"id": "color", "value": {"fixedColor": "green", "mode": "fixed"}}]}, {"matcher": {"id": "byName", "options": "Replacement UID verified (0/1)"}, "properties": [{"id": "color", "value": {"fixedColor": "blue", "mode": "fixed"}}]}, {"matcher": {"id": "byName", "options": "PodChaos active (0/1)"}, "properties": [{"id": "color", "value": {"fixedColor": "orange", "mode": "fixed"}}]}]},
+      "targets": [
+        {"expr": "adaptive_recovery_e6_product_ready", "legendFormat": "Product Ready (0/1)", "refId": "A"},
+        {"expr": "adaptive_recovery_e6_replacement_verified", "legendFormat": "Replacement UID verified (0/1)", "refId": "B"},
+        {"expr": "adaptive_recovery_e6_pod_kill_active", "legendFormat": "PodChaos active (0/1)", "refId": "C"}
+      ]
+    },
+    {
+      "id": 107,
+      "type": "timeseries",
+      "title": "E6 — Observed events",
+      "description": "Recorded E6 events, not current Product state. Each new run resets both indicators to 0 and confirms a Prometheus scrape before fault creation. A confirmed event stays at 1 until the next run resets it. Use the time picker to isolate one run; the JSON report retains exact event timestamps and recovery duration.",
+      "gridPos": {"x": 12, "y": 26, "w": 12, "h": 6},
+      "fieldConfig": {"defaults": {"unit": "none", "decimals": 0, "min": 0, "max": 1, "custom": {"axisLabel": "Recorded event (0/1)", "lineInterpolation": "stepAfter", "lineWidth": 2}}, "overrides": [{"matcher": {"id": "byName", "options": "Product interruption observed — recorded event"}, "properties": [{"id": "color", "value": {"fixedColor": "red", "mode": "fixed"}}]}, {"matcher": {"id": "byName", "options": "Healthy replacement verified — recorded event"}, "properties": [{"id": "color", "value": {"fixedColor": "green", "mode": "fixed"}}]}]},
+      "targets": [
+        {"expr": "adaptive_recovery_e6_interruption_observed", "legendFormat": "Product interruption observed — recorded event", "refId": "A"},
+        {"expr": "adaptive_recovery_e6_healthy_replacement_verified", "legendFormat": "Healthy replacement verified — recorded event", "refId": "B"}
+      ]
+    }
+  ]
+}

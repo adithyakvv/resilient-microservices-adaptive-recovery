@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: adaptive-product-e6-pod-kill
+  namespace: resilient-microservices-adaptive-recovery
+  labels:
+    app.kubernetes.io/part-of: resilient-microservices-adaptive-recovery
+    app.kubernetes.io/component: e6-product-pod-kill
+spec:
+  action: pod-kill
+  mode: one
+  duration: 30s
+  selector:
+    namespaces:
+      - resilient-microservices-adaptive-recovery
+    labelSelectors:
+      app.kubernetes.io/name: adaptive-product-service

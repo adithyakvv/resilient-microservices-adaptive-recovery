@@ -1,0 +1,37 @@
+spring:
+  application:
+    name: adaptive-order-service
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:15432/resilient_microservices_adaptive_recovery}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        default_schema: order_service
+        hbm2ddl.create_namespaces: true
+
+server:
+  port: ${ORDER_SERVICE_PORT:8083}
+
+dependencies:
+  product-base-url: ${PRODUCT_SERVICE_URL:http://localhost:8081}
+  inventory-base-url: ${INVENTORY_SERVICE_URL:http://localhost:8082}
+
+management:
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true

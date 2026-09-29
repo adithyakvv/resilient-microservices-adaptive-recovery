@@ -1,0 +1,9 @@
+apiVersion: 1
+providers:
+  - name: adaptive-recovery
+    orgId: 1
+    folder: Adaptive Recovery
+    type: file
+    disableDeletion: true
+    options:
+      path: /var/lib/grafana/dashboards

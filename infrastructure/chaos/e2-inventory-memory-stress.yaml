@@ -1,0 +1,20 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: adaptive-inventory-e2-memory
+  namespace: resilient-microservices-adaptive-recovery
+  labels:
+    app.kubernetes.io/part-of: resilient-microservices-adaptive-recovery
+    app.kubernetes.io/component: e2-memory-stress
+spec:
+  mode: one
+  duration: 60s
+  selector:
+    namespaces:
+      - resilient-microservices-adaptive-recovery
+    labelSelectors:
+      app.kubernetes.io/name: adaptive-inventory-service
+  stressors:
+    memory:
+      workers: 1
+      size: 128MB

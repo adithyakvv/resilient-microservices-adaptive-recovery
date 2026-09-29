@@ -1,0 +1,20 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: adaptive-inventory-e1-cpu
+  namespace: resilient-microservices-adaptive-recovery
+  labels:
+    app.kubernetes.io/part-of: resilient-microservices-adaptive-recovery
+    app.kubernetes.io/component: e1-cpu-stress
+spec:
+  mode: one
+  duration: 30s
+  selector:
+    namespaces:
+      - resilient-microservices-adaptive-recovery
+    labelSelectors:
+      app.kubernetes.io/name: adaptive-inventory-service
+  stressors:
+    cpu:
+      workers: 1
+      load: 50

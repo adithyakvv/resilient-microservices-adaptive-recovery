@@ -1,0 +1,8 @@
+$ErrorActionPreference='Stop'
+function Assert([bool]$ok,[string]$m){if(-not$ok){throw $m}}
+$j=Get-Content (Join-Path (Split-Path $PSScriptRoot -Parent) 'infrastructure/monitoring/prometheus/grafana-dashboard.json') -Raw|ConvertFrom-Json
+$titles=@($j.panels|ForEach-Object title)
+$e5=$j.panels|Where-Object id -eq 105;$titled=@($j.panels|Where-Object {$_.title});Assert ($j.panels.Count -eq 6) 'Dashboard must contain exactly six experiment panels';Assert ($e5.title -eq 'E5 — HTTP 500 Application Fault') 'E5 panel title missing';Assert ($titled.Count -eq 6) 'All experiment panels need titles'
+$m=$j.panels|Where-Object title -eq 'E2 — Inventory memory stress';Assert (@($m.targets).Count -eq 1) 'E2 must have exactly one series';Assert ($m.targets[0].expr -eq 'adaptive_recovery_e2_memory_bytes' -and $m.targets[0].legendFormat -eq 'Inventory memory used') 'E2 memory query or legend is incorrect';Assert ($m.fieldConfig.defaults.unit -eq 'bytes') 'Raw E2 bytes must use Grafana byte formatting, which scales these values to MiB once';Assert (-not $m.PSObject.Properties['transformations'] -and -not $m.PSObject.Properties['timeFrom']) 'E2 must not convert bytes twice or override the dashboard time picker';$overrides=$m.fieldConfig.overrides|ConvertTo-Json -Depth 6;Assert (-not $overrides.Contains('custom.axisPlacement') -and -not $overrides.Contains('percentunit')) 'E2 must have no ratio or reference-line axis'
+$cpu=$j.panels|Where-Object title -eq 'E1 — Inventory CPU stress';$cexpr=(@($cpu.targets)|ForEach-Object expr)-join '|';Assert ($cexpr.Contains('adaptive_recovery_e1_cpu_cores') -and $cexpr.Contains('vector(0.10)')) 'E1 container CPU query missing'
+'E2_DASHBOARD_TESTS=PASS'

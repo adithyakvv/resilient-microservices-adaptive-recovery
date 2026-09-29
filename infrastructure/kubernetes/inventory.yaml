@@ -1,0 +1,69 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: adaptive-inventory-service
+  labels:
+    app.kubernetes.io/name: adaptive-inventory-service
+    app.kubernetes.io/part-of: resilient-microservices-adaptive-recovery
+    monitoring: "true"
+spec:
+  selector:
+    app.kubernetes.io/name: adaptive-inventory-service
+  ports:
+    - name: http
+      port: 8082
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: adaptive-inventory-service
+  labels:
+    app.kubernetes.io/name: adaptive-inventory-service
+    app.kubernetes.io/part-of: resilient-microservices-adaptive-recovery
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: adaptive-inventory-service
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: adaptive-inventory-service
+        app.kubernetes.io/part-of: resilient-microservices-adaptive-recovery
+    spec:
+      containers:
+        - name: adaptive-inventory-service
+          image: localhost:30500/adaptive-inventory-service:phase3b
+          imagePullPolicy: Never
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          ports:
+            - name: http
+              containerPort: 8082
+          env:
+            - name: DB_URL
+              value: jdbc:postgresql://adaptive-postgres:5432/resilient_microservices_adaptive_recovery
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: adaptive-postgres-credentials
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: adaptive-postgres-credentials
+                  key: password
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 12

@@ -1,0 +1,33 @@
+spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration
+      - org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration
+  application:
+    name: adaptive-recovery-engine
+server:
+  port: ${RECOVERY_ENGINE_PORT:8090}
+recovery:
+  persistence-window: ${RECOVERY_PERSISTENCE_WINDOW:3}
+  cooldown-seconds: ${RECOVERY_COOLDOWN_SECONDS:60}
+  # Inventory Metrics API CPU is measured in cores; 0.10 cores is above the ~0.003-core baseline and below the 0.5-core limit.
+  cpu-threshold: ${RECOVERY_CPU_THRESHOLD:0.10}
+  memory-threshold: ${RECOVERY_MEMORY_THRESHOLD:0.85}
+  # E2-only opt-in profile; normal and E1 evaluations continue using 0.85.
+  e2-memory-threshold: ${RECOVERY_E2_MEMORY_THRESHOLD:0.65}
+  # E4 fallback threshold: safe rejected Order→Inventory probe latency in milliseconds.
+  e4-latency-threshold-ms: ${RECOVERY_E4_LATENCY_THRESHOLD_MS:500}
+  e4-delay-url: ${RECOVERY_E4_DELAY_URL:http://127.0.0.1:18083/api/internal/e3-delay}
+  # E5-only HTTP 500 persistence gate; default profile remains unchanged.
+  e5-persistence-window: ${RECOVERY_E5_PERSISTENCE_WINDOW:3}
+  e5-http500-threshold: ${RECOVERY_E5_HTTP500_THRESHOLD:500}
+  max-cpu-increase: ${RECOVERY_MAX_CPU_INCREASE:100m}
+  max-memory-increase: ${RECOVERY_MAX_MEMORY_INCREASE:128Mi}
+  prometheus-url: ${PROMETHEUS_URL:http://localhost:19090}
+  kubectl-bin: ${KUBECTL_BIN:kubectl}
+  namespace: ${KUBERNETES_NAMESPACE:resilient-microservices-adaptive-recovery}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health

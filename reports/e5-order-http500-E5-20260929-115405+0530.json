@@ -1,0 +1,258 @@
+﻿{
+    "experiment":  "E5",
+    "runId":  "E5-20260929-115405+0530",
+    "checkOnly":  {
+                      "IsPresent":  false
+                  },
+    "simulationOnly":  true,
+    "runStatus":  "Completed",
+    "result":  "PASSED",
+    "experimentOutcome":  "Simulated restart action recorded â€” no service was restarted",
+    "thresholdHttp500":  3,
+    "persistenceSamplesRequired":  3,
+    "timezone":  "Asia/Kolkata (+05:30)",
+    "timestamps":  {
+                       "T0":  "2026-09-29T11:54:15.6137779+05:30",
+                       "T1":  "2026-09-29T11:54:15.6295082+05:30",
+                       "T2":  "2026-09-29T06:24:15.676691700Z",
+                       "T3":  "2026-09-29T06:24:59.777326300Z",
+                       "T4":  "2026-09-29T11:55:13.9746896+05:30",
+                       "T5":  "2026-09-29T11:55:14.0432628+05:30"
+                   },
+    "timestampDefinitions":  {
+                                 "T0":  "Fault enabled",
+                                 "T1":  "First HTTP 500 observed",
+                                 "T2":  "Engine observing/decision",
+                                 "T3":  "Simulated restart action recorded",
+                                 "T4":  "Healthy HTTP 200 confirmed",
+                                 "T5":  "Fault disabled and cleanup verified"
+                             },
+    "timestampEvidence":  {
+                              "T0":  "Fixed E5 fault endpoint confirmed enabled=true",
+                              "T1":  "Dedicated E5 probe returned a distinct fresh HTTP 500",
+                              "T2":  "Engine preview response recorded",
+                              "T3":  "Engine execute=true response recorded simulated restart action",
+                              "T4":  "Fresh post-cleanup probe returned HTTP 200"
+                          },
+    "events":  [
+                   "Fault enabled",
+                   "First HTTP 500 observed",
+                   "Engine observing below threshold",
+                   "Engine observing below threshold",
+                   "Simulated restart action recorded",
+                   "Fault disabled",
+                   "Healthy HTTP 200 confirmed",
+                   "Cleanup verified"
+               ],
+    "fault":  {
+                  "enabled":  false
+              },
+    "baseline":  {
+                     "podUid":  null,
+                     "ready":  true,
+                     "health":  true
+                 },
+    "after":  {
+                  "podUid":  null,
+                  "ready":  true,
+                  "health":  true,
+                  "routeStatus":  200
+              },
+    "samples":  [
+                    {
+                        "timestamp":  "2026-09-29T11:54:05.3690267+05:30",
+                        "phase":  "before",
+                        "status":  200,
+                        "message":  "{\"status\": 200, \"message\": \"healthy HTTP 200\", \"simulationOnly\": true}",
+                        "fresh":  true
+                    },
+                    {
+                        "timestamp":  "2026-09-29T11:54:15.6295082+05:30",
+                        "phase":  "during",
+                        "status":  500,
+                        "message":  "{\"status\": 500, \"message\": \"simulated HTTP 500\", \"simulationOnly\": true}",
+                        "fresh":  true
+                    },
+                    {
+                        "timestamp":  "2026-09-29T11:54:30.6473707+05:30",
+                        "phase":  "during",
+                        "status":  500,
+                        "message":  "{\"status\": 500, \"message\": \"simulated HTTP 500\", \"simulationOnly\": true}",
+                        "fresh":  true
+                    },
+                    {
+                        "timestamp":  "2026-09-29T11:54:45.5922373+05:30",
+                        "phase":  "during",
+                        "status":  500,
+                        "message":  "{\"status\": 500, \"message\": \"simulated HTTP 500\", \"simulationOnly\": true}",
+                        "fresh":  true
+                    },
+                    {
+                        "timestamp":  "2026-09-29T11:55:13.9746896+05:30",
+                        "phase":  "after",
+                        "status":  200,
+                        "message":  "{\"status\": 200, \"message\": \"healthy HTTP 200\", \"simulationOnly\": true}",
+                        "fresh":  true
+                    }
+                ],
+    "engineEvaluations":  [
+                              {
+                                  "at":  "2026-09-29T06:24:05.406615Z",
+                                  "service":  "adaptive-order-service",
+                                  "decision":  "CONTINUE",
+                                  "reason":  "E5 baseline has no HTTP 500 responses",
+                                  "signals":  {
+                                                  "cpu":  "NaN",
+                                                  "memory":  "NaN",
+                                                  "readiness":  1.0,
+                                                  "httpErrors":  "NaN",
+                                                  "latency":  "NaN",
+                                                  "dependencyUp":  true,
+                                                  "dependencySuccesses":  -1,
+                                                  "persistenceSamples":  0,
+                                                  "kubernetesHealthy":  true
+                                              },
+                                  "actionVerified":  false,
+                                  "execute":  false
+                              },
+                              {
+                                  "at":  "2026-09-29T06:24:15.676691700Z",
+                                  "service":  "adaptive-order-service",
+                                  "decision":  "OBSERVE",
+                                  "reason":  "E5 HTTP 500 rise observed below simulated restart persistence threshold (1/3)",
+                                  "signals":  {
+                                                  "cpu":  "NaN",
+                                                  "memory":  "NaN",
+                                                  "readiness":  1.0,
+                                                  "httpErrors":  "NaN",
+                                                  "latency":  "NaN",
+                                                  "dependencyUp":  true,
+                                                  "dependencySuccesses":  -1,
+                                                  "persistenceSamples":  1,
+                                                  "kubernetesHealthy":  true
+                                              },
+                                  "actionVerified":  false,
+                                  "execute":  false
+                              },
+                              {
+                                  "at":  "2026-09-29T06:24:30.661459400Z",
+                                  "service":  "adaptive-order-service",
+                                  "decision":  "OBSERVE",
+                                  "reason":  "E5 HTTP 500 rise observed below simulated restart persistence threshold (2/3)",
+                                  "signals":  {
+                                                  "cpu":  "NaN",
+                                                  "memory":  "NaN",
+                                                  "readiness":  1.0,
+                                                  "httpErrors":  "NaN",
+                                                  "latency":  "NaN",
+                                                  "dependencyUp":  true,
+                                                  "dependencySuccesses":  -1,
+                                                  "persistenceSamples":  2,
+                                                  "kubernetesHealthy":  true
+                                              },
+                                  "actionVerified":  false,
+                                  "execute":  false
+                              },
+                              {
+                                  "at":  "2026-09-29T06:24:45.601628400Z",
+                                  "service":  "adaptive-order-service",
+                                  "decision":  "SIMULATED_RESTART",
+                                  "reason":  "E5 persistent HTTP 500 threshold reached; simulated restart recommendation â no service was restarted",
+                                  "signals":  {
+                                                  "cpu":  "NaN",
+                                                  "memory":  "NaN",
+                                                  "readiness":  1.0,
+                                                  "httpErrors":  "NaN",
+                                                  "latency":  "NaN",
+                                                  "dependencyUp":  true,
+                                                  "dependencySuccesses":  -1,
+                                                  "persistenceSamples":  3,
+                                                  "kubernetesHealthy":  true
+                                              },
+                                  "actionVerified":  false,
+                                  "execute":  false
+                              },
+                              {
+                                  "at":  "2026-09-29T06:24:59.777326300Z",
+                                  "service":  "adaptive-order-service",
+                                  "decision":  "SIMULATED_RESTART",
+                                  "reason":  "E5 persistent HTTP 500 threshold reached; simulated restart action recorded â no service was restarted",
+                                  "signals":  {
+                                                  "cpu":  "NaN",
+                                                  "memory":  "NaN",
+                                                  "readiness":  1.0,
+                                                  "httpErrors":  "NaN",
+                                                  "latency":  "NaN",
+                                                  "dependencyUp":  true,
+                                                  "dependencySuccesses":  -1,
+                                                  "persistenceSamples":  3,
+                                                  "kubernetesHealthy":  true
+                                              },
+                                  "actionVerified":  true,
+                                  "execute":  true
+                              },
+                              {
+                                  "at":  "2026-09-29T06:25:14.059170300Z",
+                                  "service":  "adaptive-order-service",
+                                  "decision":  "CONTINUE",
+                                  "reason":  "E5 baseline has no HTTP 500 responses",
+                                  "signals":  {
+                                                  "cpu":  "NaN",
+                                                  "memory":  "NaN",
+                                                  "readiness":  1.0,
+                                                  "httpErrors":  "NaN",
+                                                  "latency":  "NaN",
+                                                  "dependencyUp":  true,
+                                                  "dependencySuccesses":  -1,
+                                                  "persistenceSamples":  0,
+                                                  "kubernetesHealthy":  true
+                                              },
+                                  "actionVerified":  false,
+                                  "execute":  false
+                              }
+                          ],
+    "cleanup":  {
+                    "status":  "Passed",
+                    "faultOff":  true,
+                    "ready":  true,
+                    "health":  true,
+                    "routeRecovered":  true,
+                    "simulation":  "No Kubernetes service was restarted"
+                },
+    "telemetry":  {
+                      "scrapes":  [
+                                      {
+                                          "scrapedAt":  "2026-09-29T11:54:13.8230000+05:30",
+                                          "count":  0,
+                                          "action":  0
+                                      },
+                                      {
+                                          "scrapedAt":  "2026-09-29T11:54:28.8240000+05:30",
+                                          "count":  1,
+                                          "action":  0
+                                      },
+                                      {
+                                          "scrapedAt":  "2026-09-29T11:54:43.8220000+05:30",
+                                          "count":  2,
+                                          "action":  0
+                                      },
+                                      {
+                                          "scrapedAt":  "2026-09-29T11:54:58.8220000+05:30",
+                                          "count":  3,
+                                          "action":  0
+                                      },
+                                      {
+                                          "scrapedAt":  "2026-09-29T11:55:13.8200000+05:30",
+                                          "count":  3,
+                                          "action":  1
+                                      },
+                                      {
+                                          "scrapedAt":  "2026-09-29T11:55:28.8210000+05:30",
+                                          "count":  0,
+                                          "action":  1
+                                      }
+                                  ],
+                      "graphComplete":  true,
+                      "error":  null
+                  }
+}

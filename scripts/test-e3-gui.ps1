@@ -1,0 +1,18 @@
+$ErrorActionPreference='Stop';function Assert([bool]$ok,[string]$m){if(-not$ok){throw $m}}
+$s=Get-Content (Join-Path (Split-Path $PSScriptRoot -Parent) 'gui/server.py') -Raw;$h=Get-Content (Join-Path (Split-Path $PSScriptRoot -Parent) 'gui/index.html') -Raw
+Assert ($s.Contains("'/api/e3/run'") -and $s.Contains("'/api/e3/status'") -and $s.Contains('E3_SCRIPT')) 'E3 fixed server routes missing'
+Assert ($s.Contains('Another experiment is already running') -and $h.Contains('runE3()') -and $h.Contains('confirm(') -and $h.Contains('e3PollTimer')) 'E3 GUI start/poll/duplicate safeguards missing'
+Assert ($h.Contains('e3Report') -and $h.Contains('engineEvaluations') -and $h.Contains('measurements') -and $h.Contains('absenceVerified')) 'E3 report rendering fields missing'
+$runner=Get-Content (Join-Path (Split-Path $PSScriptRoot -Parent) 'scripts/run-e3-order-inventory-delay.ps1') -Raw;Assert ($runner.Contains('APPLICATION_DELAY') -and $runner.Contains('/api/internal/e3-delay') -and $runner.Contains('2147483647')) 'E3 bounded application delay path missing';Assert ($runner.Contains('Set-Delay $true') -and $runner.Contains('Set-Delay $false')) 'E3 delay enable/cleanup safeguards missing'
+Assert ($runner.Contains('probeTotal=1')) 'E3 GUI-compatible probe total missing'
+Assert ($runner.Contains('$delayMs=1000') -and $runner.Contains('medians') -and $runner.Contains('Medians')) 'E3 bounded delay and median reporting missing'
+Assert ($runner.Contains('requestNumber') -and $runner.Contains('requestedQuantity') -and $runner.Contains('responseMessage') -and $runner.Contains('orderPersisted') -and $runner.Contains('Rejected safely')) 'E3 safe probe evidence fields missing'
+Assert ($runner.Contains('ConvertFrom-Json') -and $runner.Contains('ToInt64($id)')) 'E3 product payload normalization regression missing'
+Assert ($h.Contains('e3ProbeDetails') -and $h.Contains('Safe Order probe evidence')) 'E3 GUI probe evidence disclosure missing'
+Assert ($h.Contains("['T0','T1','T2','T3','T4','T5']") -and $h.Contains('timestampEvidence') -and $h.Contains('e3Median')) 'E3 lifecycle timestamps/evidence or corrected median renderer missing'
+Assert ($h.Contains('Not applicable — no Chaos resource used') -and $h.Contains('Order health:') -and $h.Contains('Inventory health:')) 'E3 GUI must distinguish non-applicable Chaos from missing health evidence'
+$manifest=Get-Content (Join-Path (Split-Path $PSScriptRoot -Parent) 'infrastructure/chaos/e3-order-inventory-delay.yaml') -Raw;Assert ($manifest.Contains('adaptive-order-service') -and $manifest.Contains('target:') -and $manifest.Contains('adaptive-inventory-service')) 'Historical E3 NetworkChaos manifest was unexpectedly changed'
+$notFound=[pscustomobject]@{chaos=[pscustomobject]@{absenceVerified=$true};readiness=[pscustomobject]@{after=$true};cleanup=[pscustomobject]@{restoreVerify=$true;error=$null}};Assert ($notFound.chaos.absenceVerified -and $notFound.readiness.after -and $notFound.cleanup.restoreVerify) 'E3 already-absent cleanup fixture must pass independent checks'
+$prep=[pscustomobject]@{result='FAILED';chaos=[pscustomobject]@{created=$false};measurements=@();engineEvaluations=@();cleanup=[pscustomobject]@{restoreVerify=$false}};Assert (-not ($prep.chaos.created -or $prep.measurements.Count -or $prep.engineEvaluations.Count)) 'Preparation failure fixture must not be treated as a live E3 report'
+Assert ($s.Contains("report.get('result') != 'CHECK_ONLY_PASS'") -and $s.Contains("report.get('chaos', {}).get('created')")) 'E3 latest-report selection must exclude preparation/check-only records'
+'E3_GUI_TESTS=PASS'
